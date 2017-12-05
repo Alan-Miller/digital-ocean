@@ -3,8 +3,8 @@
 ## Postgres on Digital Ocean Ubuntu droplet
 
 ###### Install Postgres
-- Run ```sudo apt-get update```.
-- Run ```sudo apt-get install postgresql postgresql-contrib```.
+- Run ```sudo apt update```.
+- Run ```sudo apt install postgresql postgresql-contrib```.
 
 ###### Create a database
 - Run ```sudo -u postgres createdb [db_name]``` to create a new database owned by the postgres role. For example, ```sudo -u postgres createdb wonderapp``` will create a database called "wonderapp" for the postgres user.

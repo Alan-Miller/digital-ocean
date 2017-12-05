@@ -146,8 +146,8 @@ If you find it inconvenient to type in your IP address when logging into your se
 
 The first time you access your droplet, there is likely an older version of Node installed on the computer. If so, you should update. You might want to run the same version of Node as the one installed on your computer.
 - To see what version you currently have, type ```node -v```.
-- Run ```apt-get update && apt-get dist-upgrade``` to update the software Linus know about.
-- Run ```apt-get install nodejs -y ; apt-get install npm -y``` to install Node.js and npm.
+- Run ```apt update && apt dist-upgrade``` to update the software Linus know about.
+- Run ```apt install nodejs -y ; apt install npm -y``` to install Node.js and npm.
 - Run ```npm i -g n``` to globally install ```n```, which you can use to upgrade Node (or downgrade to an earlier version).
 - If you want to install the latest version of Node, type ```n latest```.
 - If you want to install an earlier version of Node, type ```n x.x.x``` (e.g., ```n 8.6.0```).
@@ -274,7 +274,7 @@ When you have multiple files to host, nginx will let you keep them on the same d
 <details> <summary> nginx installation and configuration </summary>
 
 ###### Install nginx
-- Run ```sudo apt-get install nginx```.
+- Run ```sudo apt install nginx```.
 - The ```nginx/``` folder should now be installed in the ```/etc/``` folder. Inside ```nginx/```, Ubuntu should have installed multiple files and folders, including ```sites-available/``` and ```sites-enabled/```. If these two folders are not here, create them inside the ```nginx/``` folder by running ```touch sites-available sites-enabled```. Although the simplest way is to edit the default file that was probably created for you in ```sites-available/```, it may be a better practice to leave the default file alone and instead create and configure a small file for each hosted project site.
 - After making configuration files in ```sites-available``` for each project, we will make links to those files in the ```sites-enabled``` folder. nginx uses this ```sites-enabled/``` folder to know which projects should be active.
 
