@@ -93,15 +93,18 @@ The key's randomart image is:
 
 &nbsp;
 
-###### Change SSH password
-If you need to change your password, you can do so after first logging into your droplet. Obviously, this means you need to know your old password. If you do change it, don't forget you cannot recover passwords, so you will have to take care to remember the new one.
+###### Change private key password
+The password which encrypts your SSH private key can be changed if you know the previous password. Type ```ssh-keygen -p -f ~/.ssh/id_rsa```. Changing this password has no effect on your server's password.
+
+###### Change server (droplet) password
+If you need to change your server password, you can do so after first logging into your droplet. If your server was configured with your SSH public key, then you will be able to login without a password. If you are logging in as `root`, you will not need your previous server password. If you are logging in as any other user, your previous password is required.
 - Log in to your droplet using ```ssh root@[your.IP.address]```.
-- Type ```passwd```. You will be prompted to enter your old password and then the new password (twice).
+- Type ```passwd```. If not `root`, you will be prompted to enter your old password and then the new password (twice).
 
 &nbsp;
 
 ###### Add SSH password to ssh-agent keychain
-To log in without typing your password, you can add the password to the ssh-agent, a program that holds private keys for authentication. [See these docs for more.](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
+Copying your public SSH key to a server allows you to log in to that server without typing your password. However, if you have encrypted your SSH private key locally, as you should, you will be asked for your SSH password each time you attempt to log in. To forgo typing this password as well, you can add the password to ssh-agent, a program that holds private keys in memory for authentication. [See these docs for more.](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 - Start the ssh-agent by running ```ssh-agent -s```.
 - Modify the hidden SSH config file on your computer to automatically load keys into ssh-agent's keychain.
     - Open the config file using ```nano ~/.ssh/config```.
@@ -116,8 +119,8 @@ To log in without typing your password, you can add the password to the ssh-agen
 
 &nbsp;
 
-###### Custom SSH login
-If you find it inconvenient to type in your IP address when logging into your server, try customizing your SSH login.
+###### SSH aliases
+If you find it inconvenient to type in your IP address when logging into your server, try creating an SSH alias.
 - On your local computer open the hidden SSH config file in your home folder. If you want to use nano, you can enter ```nano ~/.ssh/config```.
 - Inside this file, enter a Host, User, and Hostname in the format below. The Host will be the name you want to use for logging in, and the Hostname will be the IP address for the server. The User will be either "root" or the user if you created a user on the server. Optionally, you can specify a port or leave out this line (which sets the port to its default, 22). Below is a sample config file. A person could log in to the 123.456.7.89 droplet from this computer using either ```ssh bakerc``` to log in as root or ```ssh bakerm``` to log in as user mb.
 
