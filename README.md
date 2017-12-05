@@ -174,6 +174,10 @@ If your project was bootstrapped using create-react-app, a default service worke
 
         ```<a href={process.env.REACT_APP_LOGIN}><li>Log in</li></a>```
 
+        ... or where possible, use a relative URL:
+
+        ```<a href="/auth"><li>Log in</li></a>```
+
     - In the .env file, store the variable. No need for a keyword like ```var``` or ```const```. Also, quotation marks are optional (unless there is a space inside the string, in which case they are required). The variable for the example above would look like this inside the .env file:
 
         ```REACT_APP_LOGIN=http://localhost:3200/auth```
