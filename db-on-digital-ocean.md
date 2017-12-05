@@ -21,7 +21,7 @@
 Whether you have a local database you want to copy to your server (e.g., local to Heroku) or a hosted database you want to move to a different server (e.g., Heroku to Digital Ocean), the ```pg_dump``` command is your friend. This command is installed with Postgres and can quickly copy over the contents of one database to another. 
 
 ###### pg_dump commands and options
-The exact format you use for each part of your pg_dump command will depend a bit on where the database is and whether it is the source or the destination. Note that all these commands are done from your local computer, not from inside your server.
+The command ```pg_dump``` is used to save a copy of a database to the disk, or to copy the contents of one database to another database. The exact format you use for each part of your pg_dump command will depend a bit on where the database is and whether it is the source or the destination. Note that all these commands are done from your local computer, not from inside your server.
 - When using the ```pg_dump``` command, you might consider using the ```-O``` and ```-c``` options with it. Use ```-O``` (shorthand for ```--no-owner```) to forego any commands to set ownership to match the original database. Use ```-c``` (shorthand for ```--clean```) to clean (drop) the destination database's objects before dumping in the new ones. For more information about options, see [the docs](https://www.postgresql.org/docs/9.4/static/app-pgdump.html).
 - To copy a local database, just include the database name and any options: 
     ```sh
@@ -43,15 +43,18 @@ Use the ```|``` (pipe) symbol to pipe one database's content into another's. Her
     ```sh
     pg_dump -Oc wonderapp | heroku pg:psql -a wonderapp
     ```
-    Here, ```-a``` is an option for naming your Heroku app. Before this ```pg_dump``` command works, you may need to use ```heroku login``` to log in to your Heroku account (as mentioned in the **Possible issues** subsection below).
+    This will overwrite the contents of database associated with the Heroku `wonderapp`! Here, ```-a``` is an option for naming your Heroku app. Before this ```pg_dump``` command works, you may need to use ```heroku login``` to log in to your Heroku account (as mentioned in the **Possible issues** subsection below).
 - **Local to Digital Ocean** (with "anna" user custom SSH login and stored SSH password (see the [**Additional SSH login options**](https://github.com/Alan-Miller/digital-ocean/blob/master/README.md#connect-to-server) section from the [README](https://github.com/Alan-Miller/digital-ocean/blob/master/README.md))):
     ```sh
     pg_dump -Oc wonderapp | ssh anna "psql -d wonderapp"
     ```
+    This will overwrite the contents of the `wonderapp` database on the `anna` server!
+
 - **Digital Ocean to local** (logging in as root with no custom SSH login or stored SSH password): 
     ```sh
     ssh root@123.456.7.89 "pg_dump -Oc -U anna -h localhost wonderapp" | psql wonderapp
     ```
+    This will overwrite the content of your local `wonderapp` database.
 
 ###### Make database backup
 It can be a good idea to make a backup file of your database that you can store on your own computer. If you ever needed it, you could use it to dump into a new hosted database. Use the ```>``` (greater than) symbol.
@@ -91,15 +94,15 @@ It can be a good idea to make a backup file of your database that you can store 
 ***
 
 ## Access Digital Ocean database from local computer using SSH tunnel
-If you hosted your database on Digital Ocean and are noticing difficulty connecting to it from your local computer (e.g., through a GUI on your computer like PGAdmin or SQL Tabs), try an SSH tunnel to securely connect to the remote database.
+While Heroku allows direct access to your hosted PostgreSQL databases over SSL, PostgreSQL running on your Digital Ocean droplet does not allow direct access. Only applications already running on the server, like Node, can access the database. If you would like to directly access PostgreSQL on your droplet, e.g. using a GUI on your computer like PGAdmin or SQL Tabs), use an SSH tunnel to securely connect to the remote database.
 - To create a secure tunnel, run ```ssh -N -L [local_port]:[local_host]:[remote_port] [remote_host]``` in the command line. For example, if the droplet is "anna" and the database is a Postgres database running on 5432, we might run ```ssh -N -L 5555:localhost:5432 anna``` to create a secure tunnel and forward the local port 5555 to the remote port 5432, encrypting it in the process. For more on this, see [this article](http://www.revsys.com/writings/quicktips/ssh-tunnel.html) or [this article](https://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html).
-- Connect to the database using localhost and a local port to listen for. For instance, in the situation above, we could use a GUI to connect to the database on anna using port 5555 on localhost. 
-- Keep in mind the tunnel only stays open as long as the command line window is open where the tunnel command was entered. Closing the window will disconnect you from the database.
+- Connect to the database using localhost and a local port to listen for. For instance, in the situation above, we could use a GUI to connect to the database on anna using port 5555 on localhost. Your GUI thinks it's talking to a database running on the local machine on port 5555, but in reality the SSH tunnel is forwarding that traffic over the wire, in an encrypted tunnel, to the database running on your droplet.
+- Keep in mind the tunnel only stays open as long as the command line window is open where the tunnel command was entered. Closing the window or hitting `CTRL-C` will disconnect you from the database.
 
 ***
 
-## Change your user password:
-Do the following to change your droplet user's password. Note this is the password for a user on the droplet, not the password to log in to the droplet using ```ssh```. To change that password, see the [**Additional SSH login options**](https://github.com/Alan-Miller/digital-ocean#connect-to-server) section in the [README](https://github.com/Alan-Miller/digital-ocean/blob/master/README.md).
+## Change your database password:
+Do the following to change your droplet's database user's password. Note this is the password used to access the database, not the droplet password itself, nor the password you used to encrypt your ```ssh``` key. To change those passwords, see the [**Additional SSH login options**](https://github.com/Alan-Miller/digital-ocean#connect-to-server) section in the [README](https://github.com/Alan-Miller/digital-ocean/blob/master/README.md).
 - Log into your droplet with ```ssh```.
 - Run ```psql``` to start a Postgres session.
 - Run ```\password```. You will be prompted to enter the new password twice.
