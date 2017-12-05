@@ -93,15 +93,18 @@ The key's randomart image is:
 
 &nbsp;
 
-###### Change SSH password
-If you need to change your password, you can do so after first logging into your droplet. Obviously, this means you need to know your old password. If you do change it, don't forget you cannot recover passwords, so you will have to take care to remember the new one.
+###### Change private key password
+The password which encrypts your SSH private key can be changed if you know the previous password. Type ```ssh-keygen -p -f ~/.ssh/id_rsa```. Changing this password has no effect on your server's password.
+
+###### Change server (droplet) password
+If you need to change your server password, you can do so after first logging into your droplet. If your server was configured with your SSH public key, then you will be able to login without a password. If you are logging in as `root`, you will not need your previous server password. If you are logging in as any other user, your previous password is required.
 - Log in to your droplet using ```ssh root@[your.IP.address]```.
-- Type ```passwd```. You will be prompted to enter your old password and then the new password (twice).
+- Type ```passwd```. If not `root`, you will be prompted to enter your old password and then the new password (twice).
 
 &nbsp;
 
 ###### Add SSH password to ssh-agent keychain
-To log in without typing your password, you can add the password to the ssh-agent, a program that holds private keys for authentication. [See these docs for more.](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
+Copying your public SSH key to a server allows you to log in to that server without typing your password. However, if you have encrypted your SSH private key locally, as you should, you will be asked for your SSH password each time you attempt to log in. To forgo typing this password as well, you can add the password to ssh-agent, a program that holds private keys in memory for authentication. [See these docs for more.](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/)
 - Start the ssh-agent by running ```ssh-agent -s```.
 - Modify the hidden SSH config file on your computer to automatically load keys into ssh-agent's keychain.
     - Open the config file using ```nano ~/.ssh/config```.
@@ -116,8 +119,8 @@ To log in without typing your password, you can add the password to the ssh-agen
 
 &nbsp;
 
-###### Custom SSH login
-If you find it inconvenient to type in your IP address when logging into your server, try customizing your SSH login.
+###### SSH aliases
+If you find it inconvenient to type in your IP address when logging into your server, try creating an SSH alias.
 - On your local computer open the hidden SSH config file in your home folder. If you want to use nano, you can enter ```nano ~/.ssh/config```.
 - Inside this file, enter a Host, User, and Hostname in the format below. The Host will be the name you want to use for logging in, and the Hostname will be the IP address for the server. The User will be either "root" or the user if you created a user on the server. Optionally, you can specify a port or leave out this line (which sets the port to its default, 22). Below is a sample config file. A person could log in to the 123.456.7.89 droplet from this computer using either ```ssh bakerc``` to log in as root or ```ssh bakerm``` to log in as user mb.
 
@@ -143,8 +146,8 @@ If you find it inconvenient to type in your IP address when logging into your se
 
 The first time you access your droplet, there is likely an older version of Node installed on the computer. If so, you should update. You might want to run the same version of Node as the one installed on your computer.
 - To see what version you currently have, type ```node -v```.
-- Run ```apt-get update && apt-get dist-upgrade``` to update the software Linus know about.
-- Run ```apt-get install nodejs -y ; apt-get install npm -y``` to install Node.js and npm.
+- Run ```apt update && apt dist-upgrade``` to update the software Linus know about.
+- Run ```apt install nodejs -y ; apt install npm -y``` to install Node.js and npm.
 - Run ```npm i -g n``` to globally install ```n```, which you can use to upgrade Node (or downgrade to an earlier version).
 - If you want to install the latest version of Node, type ```n latest```.
 - If you want to install an earlier version of Node, type ```n x.x.x``` (e.g., ```n 8.6.0```).
@@ -162,14 +165,18 @@ The first time you access your droplet, there is likely an older version of Node
 If your project was bootstrapped using create-react-app, a default service worker was registered in your index.js file. Make sure ```registerServiceWorker()``` is commented out or that the service worker is otherwise not registered. Doing so will save some headaches caused when trying to serve your local files and server files together.
 
 ###### .env variables
-- On local machine, instead of using absolute paths (e.g., 'http://localhost:3200/auth') to environment variables. In other words, everywhere you have a full path with "localhost" in it, replace that path string with a reference to a variable, and store that variable and value in your .env (or config.js) file.
-    - For example, if you have an ```<a>``` tag with an Auth0 link like this...
+- On local machine, instead of using absolute paths (e.g., 'http://localhost:3200/auth'), use environment variables. In other words, everywhere you have a full path with "localhost" in it, replace that path string with a reference to a variable, and store that variable and value in your .env (or config.js) file.
+    - For example, if you have an anchor tag with an Auth0 link like this...
 
         ``` <a href={"http://localhost:3200/auth"}><li>Log in</li></a> ```
 
         ... replace the string so it says something like this:
 
         ```<a href={process.env.REACT_APP_LOGIN}><li>Log in</li></a>```
+
+        ... or where possible, use a relative URL:
+
+        ```<a href="/auth"><li>Log in</li></a>```
 
     - In the .env file, store the variable. No need for a keyword like ```var``` or ```const```. Also, quotation marks are optional (unless there is a space inside the string, in which case they are required). The variable for the example above would look like this inside the .env file:
 
@@ -262,13 +269,13 @@ swapon /swapfile
 
 
 ## nginx (optional)
-When you have multiple files to host, nginx will let you keep them on the same droplet by watching for traffic coming to your droplet and routing that traffic to the appropriate project on the droplet.
+You can host multiple projects on the same dropet. Nginx can route traffic based on hostname, port, or URL. You can configure Nginx according to your tastes and preferences to route traffic to each of your various projects on the droplet.
 
 <details> <summary> nginx installation and configuration </summary>
 
 ###### Install nginx
-- Run ```sudo apt-get install nginx```.
-- The ```nginx/``` folder should now be installed in the ```/etc/``` folder. Inside ```nginx/```, Ubuntu should have installed multiple files and folders, including ```sites-available/``` and ```sites-enabled/```. If these two folders are not here, create them inside the ```nginx/``` folder by running ```touch sites-available sites-enabled```. Although the simplest way is to edit the default file that was probably created for you in ```sites-available/```, it may be a better practice to leave the default file alone and instead create and configure a small file for each hosted project site.
+- Run ```sudo apt install nginx```.
+- The ```nginx/``` folder should now be installed in the ```/etc/``` folder. Inside ```nginx/```, Ubuntu should have installed multiple files and folders, including ```sites-available/``` and ```sites-enabled/```. Although the simplest way is to edit the default file that was probably created for you in ```sites-available/```, it may be a better practice to leave the default file alone and instead create and configure a small file for each hosted project site.
 - After making configuration files in ```sites-available``` for each project, we will make links to those files in the ```sites-enabled``` folder. nginx uses this ```sites-enabled/``` folder to know which projects should be active.
 
 ###### Configure nginx
