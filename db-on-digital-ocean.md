@@ -48,6 +48,12 @@ Use the ```|``` (pipe) symbol to pipe one database's content into another's. Her
     ```sh
     pg_dump -Oc wonderapp | ssh anna "psql -d wonderapp"
     ```
+- **Heroku to local** (using [Heroku's commands](https://devcenter.heroku.com/articles/heroku-postgres-import-export)): 
+    ```sh
+    heroku pg:backups:capture -a wonderapp
+    heroku pg:backups:download -a wonderapp
+    pg_restore --verbose --clean --no-acl --no-owner -h localhost -U myuser -d mydb latest.dump
+    ```
 - **Digital Ocean to local** (logging in as root with no custom SSH login or stored SSH password): 
     ```sh
     ssh root@123.456.7.89 "pg_dump -Oc -U anna -h localhost wonderapp" | psql wonderapp
