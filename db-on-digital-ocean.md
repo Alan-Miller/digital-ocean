@@ -52,7 +52,7 @@ Use the ```|``` (pipe) symbol to pipe one database's content into another's. Her
     ```sh
     heroku pg:backups:capture -a wonderapp
     heroku pg:backups:download -a wonderapp
-    pg_restore --verbose --clean --no-acl --no-owner -h localhost -U myuser -d mydb latest.dump
+    pg_restore --verbose --clean --no-acl --no-owner -h localhost -U local_db_user -d local_db_name latest.dump
     ```
 - **Digital Ocean to local** (logging in as root with no custom SSH login or stored SSH password): 
     ```sh
