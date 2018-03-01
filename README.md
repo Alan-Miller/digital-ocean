@@ -200,6 +200,10 @@ Inside your index.html file, find the `<title>` tags inside the `<head>`. If you
 ###### Customize the README
 If you used create-react-app, your README is full of boilerplate docs about create-react-app. Delete all of this and replace it with your own content. A good use for this README is to introduce users to your app with an introduction or overview or images that help the user understand how the app works. This can be particularly useful for portfolio pieces, since potential employers will have an intro page showing them what your app is all about and what they should expect.
 
+###### Bind the IP address
+When your server file invokes `listen()` like this: `app.listen(SERVER_PORT, () => { console.log("Listening on port " + SERVER_PORT) });`, you are binding your Express app to the given port. Because of this, even if you have several sites hosted on the same server droplet that are all subdomains on the same site, you can use load balancers like nginx to redirect incoming traffic to the correct site using the bound port number of each site. If you have a site called wonderapp on port 4444 on your toomanyducks.com domain, visitors can find it by typing `wonderapp.toomanyducks.com` in the URL bar, or by specifying the port by typing `wonderapp.toomanyducks.com:4444`, or even by just typing `toomanyducks.com:4444`. If you have another site called starman on port 3333, visitors could visit it by going to `toomanyducks.com:3333`. But maybe you want visitors to get to your site through the address alone and not the port. In addition to binding the port, you can go one step further to bind your app to a specific IP address. Do this by changing the `listen()` signature to include an IP address as the second parameter. For example, change the `listen()` invocation above to `app.listen(SERVER_PORT, "localhost", () => { console.log("Listening on port " + SERVER_PORT) });`. Now, visitors have to go to `wonderapp.toomanyducks.com` or `starman.toomanyducks.com`, and the port will not appear in the URL bar.
+
+
 </details>
 
 
